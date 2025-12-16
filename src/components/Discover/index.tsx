@@ -206,7 +206,39 @@ const Discover = () => {
           </Transition>
         </>
       )}
-      {(isEditing ? sliders : discoverData)?.map((slider, index) => {
+      {(() => {
+        const allSliders = isEditing ? sliders : discoverData ?? [];
+        const filtered = allSliders.filter((s) => {
+          // Remove TMDB and Movie/TV specific sliders for music-only fork
+          const tmdbTypes = [
+            DiscoverSliderType.TMDB_MOVIE_KEYWORD,
+            DiscoverSliderType.TMDB_TV_KEYWORD,
+            DiscoverSliderType.TMDB_MOVIE_GENRE,
+            DiscoverSliderType.TMDB_TV_GENRE,
+            DiscoverSliderType.TMDB_STUDIO,
+            DiscoverSliderType.TMDB_NETWORK,
+            DiscoverSliderType.TMDB_SEARCH,
+            DiscoverSliderType.TMDB_MOVIE_STREAMING_SERVICES,
+            DiscoverSliderType.TMDB_TV_STREAMING_SERVICES,
+          ];
+          const movieTvTypes = [
+            DiscoverSliderType.POPULAR_MOVIES,
+            DiscoverSliderType.MOVIE_GENRES,
+            DiscoverSliderType.UPCOMING_MOVIES,
+            DiscoverSliderType.STUDIOS,
+            DiscoverSliderType.POPULAR_TV,
+            DiscoverSliderType.TV_GENRES,
+            DiscoverSliderType.UPCOMING_TV,
+            DiscoverSliderType.NETWORKS,
+          ];
+
+          if (tmdbTypes.includes(s.type as DiscoverSliderType)) return false;
+          if (movieTvTypes.includes(s.type as DiscoverSliderType)) return false;
+
+          return true;
+        });
+
+        return filtered.map((slider, index) => {
         let sliderComponent: React.ReactNode;
 
         switch (slider.type) {
